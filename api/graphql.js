@@ -42,7 +42,6 @@ const schema = buildSchema(`
 
 const root = {
     Login: async ({input}) => {
-        console.log(input)
         let response = await login(input.username,input.password);
        return response;
     },

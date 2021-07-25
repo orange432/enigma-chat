@@ -1,0 +1,21 @@
+.login-register{
+  border: 2px solid black;
+  max-width: 480px;
+  padding: 6px;
+  margin: 10px auto;
+
+  &__title{
+    text-align: center;
+  }
+  &__tabs{
+    display: flex;
+  }
+  &__tab{
+    width: 50%;
+    text-align: center;
+    padding: 12px;
+    &.active{
+      background: lightcoral;
+    }
+  }
+}

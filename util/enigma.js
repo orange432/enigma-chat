@@ -15,10 +15,11 @@ const sha256 = (input) => {
 const randomString = (length) => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
     const charLength = chars.length;
-
+    let out='';
     for(let i=0;i<length;i++){
-
+        out+= chars[Math.floor(Math.random()*charLength)];
     }
+    return out;
 }
 
 /* Generates an OpenPGP keypair
@@ -46,7 +47,7 @@ const encryptText = (text,key,iv) =>{
   let cipher = createCipheriv('aes-256-gcm',key,iv);
   let encryptedText = cipher.update(text,'utf8');
   encryptedText = Buffer.concat([encryptedText,cipher.final()]);
-  return encryptedText.toString(Enigma.encoding);
+  return encryptedText.toString('base64');
 
 }
 
@@ -58,7 +59,7 @@ const encryptText = (text,key,iv) =>{
 const decryptText = (text,key,iv) => {
   key = key.substr(0,32);
   let decipher = createDecipheriv('aes-256-gcm',key,iv);
-  let decryptedText = decipher.update(text,Enigma.encoding,'utf8');
+  let decryptedText = decipher.update(text,'base64','utf8');
   return decryptedText;
 }
 

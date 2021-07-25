@@ -20,7 +20,7 @@ const login = async (username,password) => {
       const started = Date.now();
       const session = generateSession(user.id,started);
       await Session.sync()
-      let exists = Session.findOne({where:{id: session}});
+      let exists = await Session.findOne({where:{id: session}});
       if(exists){
         return {success: false, message: "Database error.  Please try again", code: "DATABASE_ERROR"};
       }
@@ -30,7 +30,7 @@ const login = async (username,password) => {
         started,
         expiry: Date.now() + 15*60*1000
       });
-      return {success: true, message: "Login Successful.", code: "SUCCESS"};
+      return {success: true, message: "Login Successful.", code: "SUCCESS", session};
     }else{
       return {success: false, message: "Wrong username/password combination", code: "WRONG_CREDENTIALS"};
     }

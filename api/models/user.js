@@ -1,6 +1,6 @@
 import pkg from 'sequelize';
 const { Sequelize, DataTypes } = pkg;
-const sequelize = new Sequelize({dialect: 'sqlite',storage: './db.sqlite3'});
+const sequelize = new Sequelize({dialect: 'sqlite',storage: './db.sqlite3',logging: false});
 
 const User = sequelize.define('user',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
