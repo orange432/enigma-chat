@@ -1,10 +1,13 @@
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
+import { login, authorizeSession } from './controllers/sessions.js';
+import { createUser } from "./controllers/users.js";
 
 const schema = buildSchema(`
     type LoginResponse{
         success: Boolean!
         message: String
+        code: String
         session: String
     }
 
@@ -14,6 +17,13 @@ const schema = buildSchema(`
         code: String
     }
 
+    type AuthResponse{
+        success: Boolean!
+        message: String
+        code: String
+        username: String
+    }
+
 
     input LoginInput{
         username: String!
@@ -21,7 +31,7 @@ const schema = buildSchema(`
     }
 
     type Query{
-        AuthorizeSession(session: String!): SuccessResponse!
+        AuthorizeSession(session: String!): AuthResponse!
         Login(input: LoginInput): LoginResponse!
     }
 
@@ -31,11 +41,18 @@ const schema = buildSchema(`
 `)
 
 const root = {
-    Login: ({input}) => {
-
+    Login: async ({input}) => {
+        console.log(input)
+        let response = await login(input.username,input.password);
+       return response;
     },
-    Register: ({input}) => {
-
+    Register: async ({input}) => {
+       let response = await createUser(input);
+       return response;
+    },
+    AuthorizeSession: async ({session}) => {
+        let response = await authorizeSession(session);
+        return response;
     }
 }
 

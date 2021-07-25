@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import { createCipheriv,createDecipheriv, createHash } from 'crypto';
 import openpgp from 'openpgp'
 
 /* Generates a sha256 hash
@@ -36,5 +36,48 @@ const generateKeyPair = async (username, passphrase) => {
     return {publicKey, privateKey};
 }
 
+/* Encrypts text with AES-256-GCM 
+    @param (string) text - Text to be enrypted
+    @param (string) key - 32 byte key
+    @param (string) iv - Initialization Vector
+*/
+const encryptText = (text,key,iv) =>{
+  key = key.substr(0,32);
+  let cipher = createCipheriv('aes-256-gcm',key,iv);
+  let encryptedText = cipher.update(text,'utf8');
+  encryptedText = Buffer.concat([encryptedText,cipher.final()]);
+  return encryptedText.toString(Enigma.encoding);
 
-export { sha256, randomString, generateKeyPair }
+}
+
+/* Decrypts text with AES-256-GCM 
+    @param (string) text - Text to be enrypted
+    @param (string) key - 32 byte key
+    @param (string) iv - Initialization Vector
+*/
+const decryptText = (text,key,iv) => {
+  key = key.substr(0,32);
+  let decipher = createDecipheriv('aes-256-gcm',key,iv);
+  let decryptedText = decipher.update(text,Enigma.encoding,'utf8');
+  return decryptedText;
+}
+
+/* Generates a session token based on the users id */
+const generateSession = (user_id,started) => {
+    const key = "sQ5kS5G6n5teMMBLwLNUTyMyMT9npM2r";
+    const iv = "sT3MdbTLGELdSXbnFSQ8j7vPQd46EYgV";
+    const sessionString = `${user_id}__${started}__${randomString(16)}`;
+    const session = encryptText(sessionString,key,iv);
+    return session;
+}
+
+/* Decrypts the session token */
+const decryptSession = (token) => {
+    const key = "sQ5kS5G6n5teMMBLwLNUTyMyMT9npM2r";
+    const iv = "sT3MdbTLGELdSXbnFSQ8j7vPQd46EYgV";
+    const decryptedSession = decryptText(token,key,iv);
+    const [user_id,started] = decryptedSession.split('__');
+    return {user_id,started};
+}
+
+export { sha256, randomString, generateKeyPair,encryptText, decryptText, generateSession, decryptSession }

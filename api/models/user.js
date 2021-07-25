@@ -1,4 +1,5 @@
-import { Sequelize, DataTypes } from "sequelize";
+import pkg from 'sequelize';
+const { Sequelize, DataTypes } = pkg;
 const sequelize = new Sequelize({dialect: 'sqlite',storage: './db.sqlite3'});
 
 const User = sequelize.define('user',{

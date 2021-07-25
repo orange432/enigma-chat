@@ -8,7 +8,7 @@ import { randomString, sha256,generateKeyPair } from '../../util/enigma.js';
 const createUser = async (details) => {
     try{
         // Check if input is valid
-        if(!validator.isAlphanumeric(details.username) || details.username.length<5 || details.username.password<5){
+        if(!validator.isAlphanumeric(details.username) || details.username.length<5 || details.password.length<5){
             return {success: false,message: "Invalid credentials.",code: "INVALID_CREDENTIALS"};
         }
         await User.sync();
@@ -39,3 +39,5 @@ const createUser = async (details) => {
         return {success: false, message: "Database error.  Please try again", code:"DATABASE_ERROR"}
     }
 }
+
+export {createUser}
