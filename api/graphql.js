@@ -2,7 +2,7 @@ import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import { login, authorizeSession } from './controllers/sessions.js';
 import { createUser } from "./controllers/users.js";
-import { getMessages } from "./controllers/messages.js";
+import { getMessages, sendMessage } from "./controllers/messages.js";
 
 const schema = buildSchema(`
     type LoginResponse{
@@ -26,11 +26,13 @@ const schema = buildSchema(`
     }
 
     type Message{
-        id: Int!
-        from: String!
-        to: String!
-        content: String!
-        time: Int!
+        id: Int
+        from: Int
+        to: Int
+        content: String
+        time: String
+        createdAt: String
+        updatedAt: String
     }
 
     input LoginInput{
@@ -70,12 +72,22 @@ const root = {
         return response;
     },
     GetMessages: async ({session}) => {
-        let response = await authorizeSession(session);
-        if(response.success){
-            let messages = await getMessages(response.username);
+        let auth = await authorizeSession(session);
+        if(auth.success){
+            let messages = await getMessages(auth.username);
             return messages;
         }else{
             return [];
+        }
+    },
+    SendMessage: async ({input}) => {
+        let auth = await authorizeSession(input.session);
+        console.log(input);
+        if(auth.success){
+            let result = await sendMessage(auth.username,input.receiver,input.message);
+            return result;
+        }else{
+            return auth;
         }
     }
 }

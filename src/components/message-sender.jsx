@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import './message-sender.scss'
 
 const MessageSender = () => {
   const [receiver,setReceiver] = useState('');
@@ -6,6 +7,9 @@ const MessageSender = () => {
 
   const sendMessage = e => {
     e.preventDefault();
+    if(!message){
+      alert("Please enter a message!");
+    }
     const token = sessionStorage.getItem('session');
     const query = `
       mutation{
@@ -24,7 +28,10 @@ const MessageSender = () => {
     })
     .then(res=>res.json())
     .then(({data})=>{
-      console.log(data);
+      if(data.SendMessage.success){
+        alert("Message sent successfully!")
+        location.reload();
+      }
     })
   }
   return (

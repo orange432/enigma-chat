@@ -43,6 +43,10 @@ html,body{
   font-size: 24px;
 }
 
+.textarea{
+  resize: none;
+}
+
 .btn-primary{
   background: #111;
   border: 1px solid #111;
@@ -53,5 +57,19 @@ html,body{
   &:hover{
     color: #111;
     background: #fff;
+  }
+}
+
+
+.btn-secondary{
+  background: #fff;
+  border: 1px solid #111;
+  color: #111;
+  border-radius: 20px;
+  transition: color 1s;
+  padding: 12px 24px;
+  &:hover{
+    color: #fff;
+    background: #111;
   }
 }

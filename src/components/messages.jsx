@@ -2,7 +2,11 @@ import React,{ useEffect, useState } from 'react'
 
 const Messages = (props) => {
   const [messages,setMessages] = useState([]);
-  
+
+  useEffect(()=>{
+    getMessages();
+  },[])
+
   const decryptMessage = (messageId) => {
     const token = sessionStorage.getItem('session');
     const query = `
@@ -32,12 +36,11 @@ const Messages = (props) => {
     const query = `
     query{
       GetMessages(session: "${token}"){
-        messages{
           id
-          sender
+          from
+          to
           content
           time
-        }
       }
     }
     `
@@ -45,13 +48,17 @@ const Messages = (props) => {
     fetch('/_graphql',{
       method: "POST",
       headers: {
-        "Content-Type": "applcation/json"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({query})
     })
     .then(res=>res.json())
     .then(({data})=>{
-      setMessages(data.GetMessages.messages);
+      console.log(data);
+      setMessages(data.GetMessages);
+    })
+    .catch(err=>{
+      console.log(err);
     })
   }
   if (messages.length===0){
@@ -72,8 +79,8 @@ const Messages = (props) => {
             {message.content}
           </div>
           <div className="message__controls">
-            <button type="button">Decrypt</button>
-            <button type="button">Delete</button>
+            <button type="button" className="btn-primary">Decrypt</button>
+            <button type="button" className="btn-secondary">Delete</button>
           </div>
         </div>
       ))}

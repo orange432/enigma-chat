@@ -2,10 +2,13 @@ import Message from '../models/message.js';
 import User from '../models/user.js'
 
 /* Gets all the messages sent to the user */
-export const getMessages = async (user_id) => {
+export const getMessages = async (username) => {
   try{
-    let messages = await Message.findAll({where: {to: user_id}});
-    return messages;
+    await Message.sync();
+    let messages = await Message.findAll({where: {to: username}});
+    const allMessages = messages.map(message=>message.dataValues);
+    console.log(allMessages)
+    return allMessages;
   }catch(err){
     console.log(err);
     return [];
@@ -20,11 +23,12 @@ export const sendMessage = async (from,to,content) => {
     if(!receiver){
       return {success: false, message: "User doesn't exist.", code: "INVALID_USER"}
     }
+    console.log(from,to,content);
     // Create the message
-    
+    await Message.sync();
     await Message.create({
       from,
-      to: receiver.id,
+      to: receiver.username,
       content,
       time: Date.now()
     })

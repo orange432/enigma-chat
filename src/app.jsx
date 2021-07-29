@@ -74,10 +74,16 @@ const App = () => {
   return(
     <div>
       <h1>Enimga</h1>
-      <h2>Send a Message</h2>
-      <MessageSender/>
-      <h2>Messsages</h2>
-      <Messages/>
+      <div style={{display: 'flex'}}>
+        <div style={{margin: 50, width: 480}}>
+          <h2>Send a Message</h2>
+          <MessageSender/>
+        </div>
+        <div style={{margin: 50}}>
+          <h2>Messsages</h2>
+          <Messages/>
+        </div>
+      </div>
     </div>
   )
 }
