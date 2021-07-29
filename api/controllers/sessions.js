@@ -3,7 +3,7 @@ import validator from 'validator';
 import Session from "../models/session.js";
 import { generateSession,decryptSession,sha256 } from "../../util/enigma.js";
 
-const login = async (username,password) => {
+export const login = async (username,password) => {
   try{
     if(!validator.isAlphanumeric(username) || username.length<5 || password.length<5){
       return {success: false,message: "Invalid credentials.",code: "INVALID_CREDENTIALS"};
@@ -40,7 +40,7 @@ const login = async (username,password) => {
   }
 }
 
-const authorizeSession = async (token) => {
+export const authorizeSession = async (token) => {
   try{
     let session = await Session.findOne({where: {
       id: token
@@ -57,11 +57,9 @@ const authorizeSession = async (token) => {
 
     // Get User Details
     let user = await User.findOne({where: {id: session.user_id}});
-    return {success: true, message: "Session is valid", code: "SUCCESS",username: user.username};
+    return {success: true, message: "Session is valid", code: "SUCCESS",username: user.username, user_id: user.id};
   }catch(err){
     console.log(err);
     return {success: false, message: "Database error.  Please try again", code: "DATABASE_ERROR"};
   }
 }
-
-export { login, authorizeSession }

@@ -2,10 +2,15 @@ import React, {useState,useEffect} from 'react'
 import './main.scss';
 
 import LoginRegister from './components/login-register';
+import Messages from './components/messages';
+import MessageSender from './components/message-sender';
 
 const App = () => {
   const [loading,setLoading] = useState(true);
   const [loggedIn,setLoggedIn] = useState(false);
+  const [messages,setMessages] = useState([]);
+
+  
 
   const authorize = () => {
     const token = sessionStorage.getItem('session');
@@ -68,7 +73,11 @@ const App = () => {
 
   return(
     <div>
-      <h1>You are Logged in!</h1>
+      <h1>Enimga</h1>
+      <h2>Send a Message</h2>
+      <MessageSender/>
+      <h2>Messsages</h2>
+      <Messages/>
     </div>
   )
 }

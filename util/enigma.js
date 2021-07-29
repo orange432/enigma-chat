@@ -4,7 +4,7 @@ import openpgp from 'openpgp'
 /* Generates a sha256 hash
    @param (string) input - The string to hash
 */
-const sha256 = (input) => {
+export const sha256 = (input) => {
     return createHash('sha256').update(input).digest('base64');
 }
 
@@ -12,7 +12,7 @@ const sha256 = (input) => {
 /* Generates a random string
     @param (number) length - The length of the random string to be returned;
 */
-const randomString = (length) => {
+export const randomString = (length) => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
     const charLength = chars.length;
     let out='';
@@ -27,7 +27,7 @@ const randomString = (length) => {
     @param (string) passphrase - passphrase used to store the key (default is the users salt)
 */
 
-const generateKeyPair = async (username, passphrase) => {
+export const generateKeyPair = async (username, passphrase='') => {
     const {privateKey, publicKey} = await openpgp.generateKey({
         curve: 'brainpoolP512r1', 
         userIDs: [{name: username,email: `${username}@enigma.com`}],
@@ -37,12 +37,44 @@ const generateKeyPair = async (username, passphrase) => {
     return {publicKey, privateKey};
 }
 
+
+/* Encrypts text with an OpenPGP public key
+    @param (string) text - the text to be encrypted
+    @param (string) key - the PGP key to encrypt with
+*/
+export const encryptWithPGP = async (text, key) => {
+    const publicKey = openpgp.readKey({armoredKey: key});
+    const encrypted = await openpgp.encrypt({
+        message: await openpgp.createMessage({text}),
+        encryptionKeys: publicKey
+    });
+    return encrypted;
+}
+
+/* Decrypts text with an OpenPGP public key
+    @param (string) text - the text to be encrypted
+    @param (string) key - the private PGP key to encrypt with
+    @param (string) passphrase - the passphrase used for the private key
+*/
+export const decryptWithPGP = async (text,key, passphrase='') => {
+    const privateKey = await openpgp.decryptKey({
+        privateKey: await openpgp.readPrivateKey({armoredKey: key}),
+        passphrase
+    })
+    const message = await openpgp.readMessage({armoredMessage: text});
+    const { data: decrypted, signatures} = await openpgp.decrypt({
+        message,
+        decryptionKeys: privateKey
+    });
+    return decrypted;
+}
+
 /* Encrypts text with AES-256-GCM 
     @param (string) text - Text to be enrypted
     @param (string) key - 32 byte key
     @param (string) iv - Initialization Vector
 */
-const encryptText = (text,key,iv) =>{
+export const encryptText = (text,key,iv) =>{
   key = key.substr(0,32);
   let cipher = createCipheriv('aes-256-gcm',key,iv);
   let encryptedText = cipher.update(text,'utf8');
@@ -56,7 +88,7 @@ const encryptText = (text,key,iv) =>{
     @param (string) key - 32 byte key
     @param (string) iv - Initialization Vector
 */
-const decryptText = (text,key,iv) => {
+export const decryptText = (text,key,iv) => {
   key = key.substr(0,32);
   let decipher = createDecipheriv('aes-256-gcm',key,iv);
   let decryptedText = decipher.update(text,'base64','utf8');
@@ -64,7 +96,7 @@ const decryptText = (text,key,iv) => {
 }
 
 /* Generates a session token based on the users id */
-const generateSession = (user_id,started) => {
+export const generateSession = (user_id,started) => {
     const key = "sQ5kS5G6n5teMMBLwLNUTyMyMT9npM2r";
     const iv = "sT3MdbTLGELdSXbnFSQ8j7vPQd46EYgV";
     const sessionString = `${user_id}__${started}__${randomString(16)}`;
@@ -73,12 +105,10 @@ const generateSession = (user_id,started) => {
 }
 
 /* Decrypts the session token */
-const decryptSession = (token) => {
+export const decryptSession = (token) => {
     const key = "sQ5kS5G6n5teMMBLwLNUTyMyMT9npM2r";
     const iv = "sT3MdbTLGELdSXbnFSQ8j7vPQd46EYgV";
     const decryptedSession = decryptText(token,key,iv);
     const [user_id,started] = decryptedSession.split('__');
     return {user_id,started};
 }
-
-export { sha256, randomString, generateKeyPair,encryptText, decryptText, generateSession, decryptSession }

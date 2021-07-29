@@ -5,7 +5,7 @@ import { randomString, sha256,generateKeyPair } from '../../util/enigma.js';
 /* Creates a user with the given details if the user doesn't already exist
   @param (object) details - An object with the properties username and password
 */
-const createUser = async (details) => {
+export const createUser = async (details) => {
     try{
         // Check if input is valid
         if(!validator.isAlphanumeric(details.username) || details.username.length<5 || details.password.length<5){
@@ -39,5 +39,3 @@ const createUser = async (details) => {
         return {success: false, message: "Database error.  Please try again", code:"DATABASE_ERROR"}
     }
 }
-
-export {createUser}
