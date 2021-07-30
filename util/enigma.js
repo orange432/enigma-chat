@@ -43,7 +43,7 @@ export const generateKeyPair = async (username, passphrase='') => {
     @param (string) key - the PGP key to encrypt with
 */
 export const encryptWithPGP = async (text, key) => {
-    const publicKey = openpgp.readKey({armoredKey: key});
+    const publicKey = await openpgp.readKey({armoredKey: key});
     const encrypted = await openpgp.encrypt({
         message: await openpgp.createMessage({text}),
         encryptionKeys: publicKey

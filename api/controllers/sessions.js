@@ -57,6 +57,8 @@ export const authorizeSession = async (token) => {
 
     // Get User Details
     let user = await User.findOne({where: {id: session.user_id}});
+    // Extend session time
+    await Session.update({expiry: Date.now()+15*60*1000},{where: {id: token}})
     return {success: true, message: "Session is valid", code: "SUCCESS",username: user.username, user_id: user.id};
   }catch(err){
     console.log(err);

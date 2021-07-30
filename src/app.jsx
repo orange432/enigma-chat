@@ -73,13 +73,13 @@ const App = () => {
 
   return(
     <div>
-      <h1>Enimga</h1>
-      <div style={{display: 'flex'}}>
+      <h1 style={{textAlign: 'center'}}>Enigma</h1>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
         <div style={{margin: 50, width: 480}}>
           <h2>Send a Message</h2>
           <MessageSender/>
         </div>
-        <div style={{margin: 50}}>
+        <div style={{margin: 50,width: 640}}>
           <h2>Messsages</h2>
           <Messages/>
         </div>

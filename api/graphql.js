@@ -2,7 +2,7 @@ import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import { login, authorizeSession } from './controllers/sessions.js';
 import { createUser } from "./controllers/users.js";
-import { getMessages, sendMessage } from "./controllers/messages.js";
+import { getMessages, sendMessage,decryptMessage } from "./controllers/messages.js";
 
 const schema = buildSchema(`
     type LoginResponse{
@@ -35,6 +35,13 @@ const schema = buildSchema(`
         updatedAt: String
     }
 
+    type DecryptResponse{
+        success: Boolean!
+        content: String
+        message: String
+        code: String
+    }
+
     input LoginInput{
         username: String!
         password: String!
@@ -50,11 +57,13 @@ const schema = buildSchema(`
         AuthorizeSession(session: String!): AuthResponse!
         Login(input: LoginInput): LoginResponse!
         GetMessages(session: String): [Message]
+        DecryptMessage(session: String, id: Int): DecryptResponse!
     }
 
     type Mutation{
         Register(input: LoginInput): SuccessResponse!
         SendMessage(input: MessageInput): SuccessResponse!
+        DeleteMessage(session: String, id: Int): SuccessResponse!
     }
 `)
 
@@ -82,9 +91,17 @@ const root = {
     },
     SendMessage: async ({input}) => {
         let auth = await authorizeSession(input.session);
-        console.log(input);
         if(auth.success){
             let result = await sendMessage(auth.username,input.receiver,input.message);
+            return result;
+        }else{
+            return auth;
+        }
+    },
+    DecryptMessage: async ({session, id}) => {
+        let auth = await authorizeSession(session);
+        if(auth.success){
+            let result = await decryptMessage(id,auth.user_id);
             return result;
         }else{
             return auth;

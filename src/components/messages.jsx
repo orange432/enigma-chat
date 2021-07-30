@@ -1,4 +1,5 @@
 import React,{ useEffect, useState } from 'react'
+import './messages.scss'
 
 const Messages = (props) => {
   const [messages,setMessages] = useState([]);
@@ -11,7 +12,7 @@ const Messages = (props) => {
     const token = sessionStorage.getItem('session');
     const query = `
     query{
-      DecryptMessage(session: "${token}",message: ${messageId}){
+      DecryptMessage(session: "${token}",id: ${messageId}){
         success
         content
         message
@@ -27,7 +28,11 @@ const Messages = (props) => {
     })
     .then(res=>res.json())
     .then(({data})=>{
-
+      if(data.DecryptMessage.success){
+        alert(data.DecryptMessage.content);
+      }else{
+        alert(data.DecryptMessage.message);
+      }
     })
   }
 
@@ -71,15 +76,15 @@ const Messages = (props) => {
   return (
     <div className="messages">
       {messages.map((message,k)=>(
-        <div className="message">
+        <div className="message" key={k}>
           <div className="message__header">
             From: {message.username} - {message.time.toString()}
           </div>
           <div className="message__content">
-            {message.content}
+            <textarea className="textarea" disabled={true} value={message.content}></textarea>
           </div>
           <div className="message__controls">
-            <button type="button" className="btn-primary">Decrypt</button>
+            <button type="button" className="btn-primary" onClick={()=>decryptMessage(message.id)}>Decrypt</button>
             <button type="button" className="btn-secondary">Delete</button>
           </div>
         </div>
