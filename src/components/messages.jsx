@@ -113,7 +113,7 @@ const Messages = (props) => {
           </div>
           <div className="message__controls">
             <button type="button" className="btn-primary" onClick={()=>decryptMessage(message.id)}>Decrypt</button>
-            <button type="button" className="btn-secondary">Delete</button>
+            <button type="button" className="btn-secondary" onClick={()=>deleteMessage(message.id)}>Delete</button>
           </div>
         </div>
       ))}
