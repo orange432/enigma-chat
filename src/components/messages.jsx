@@ -6,7 +6,35 @@ const Messages = (props) => {
 
   useEffect(()=>{
     getMessages();
+    setInterval(()=>getMessages(),7500);
   },[])
+
+  const deleteMessage = messageId => {
+    const token = sessionStorage.getItem('session');
+    const query = `
+      mutation{
+        DeleteMessage(session: "${token}", id: ${messageId}){
+          success
+          message
+        }
+      }
+    `
+    fetch("/_graphql",{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({query})
+    })
+    .then(res=>res.json())
+    .then(({data})=>{
+      if(data.DeleteMessage.success){
+        getMessages();
+      }else{
+        alert(data.message);
+      }
+    })
+  }
 
   const decryptMessage = (messageId) => {
     const token = sessionStorage.getItem('session');

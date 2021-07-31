@@ -30,7 +30,6 @@ const MessageSender = () => {
     .then(({data})=>{
       if(data.SendMessage.success){
         alert("Message sent successfully!")
-        location.reload();
       }
     })
   }

@@ -2,7 +2,7 @@ import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import { login, authorizeSession } from './controllers/sessions.js';
 import { createUser } from "./controllers/users.js";
-import { getMessages, sendMessage,decryptMessage } from "./controllers/messages.js";
+import { getMessages, sendMessage,decryptMessage, deleteMessage } from "./controllers/messages.js";
 
 const schema = buildSchema(`
     type LoginResponse{
@@ -102,6 +102,15 @@ const root = {
         let auth = await authorizeSession(session);
         if(auth.success){
             let result = await decryptMessage(id,auth.user_id);
+            return result;
+        }else{
+            return auth;
+        }
+    },
+    DeleteMessage: async ({session,id}) => {
+        let auth = await authorizeSession(session);
+        if(auth.succss){
+            let result = await deleteMessage(id,auth.username);
             return result;
         }else{
             return auth;

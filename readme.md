@@ -4,8 +4,7 @@ An encrypted chat system built using:
 - React
 - GraphQL
 - Sass
-- Mongoose
-- Redis
+- SQLite
 
 ## How are my messages encrypted?
-All messages are encrypted using AES-256-GCM.
+All messages are encrypted using OpenPGP.

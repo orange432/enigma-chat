@@ -55,9 +55,26 @@ export const decryptMessage = async (message_id,user_id) => {
       return {success: false, message: "Not your message.", code: "WRONG_USER"}
     }
     const messageContent = await decryptWithPGP(message.content,receiver.privateKey,receiver.salt);
-    return {success: true, content: messageContent, message: "Decryption successful.", code: "SUCCESS"} // Probably not the best way
+    return {success: true, content: messageContent, message: "Decryption successful.", code: "SUCCESS"}
+  }catch(err){
+    console.log(err);
+    return {success: false, message: "Database error.", code: "DATABASE_ERROR"}; // could also be pgp error
+  }
+}
+
+/* Deletes a message from a users inbox */
+export const deleteMessage = async (message_id,username) => {
+  try{
+    let message = await Message.findOne({where: {id: message_id}});
+
+    if(message.username!==username){
+      return {success: false, message: "Not your message.", code: "WRONG_USER"};
+    }
+    await Message.destroy({where: {id: message.id}});
+    return {success: true, message: "Deletion successful.", code: "SUCCESS"};
   }catch(err){
     console.log(err);
     return {success: false, message: "Database error.", code: "DATABASE_ERROR"};
   }
+
 }
